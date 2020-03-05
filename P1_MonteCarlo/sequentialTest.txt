@@ -1,0 +1,3 @@
+Total number of points: 1000
+Points within circle: 	795
+Pi estimation: 		3.180000066757202
