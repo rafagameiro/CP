@@ -3,8 +3,7 @@ import java.lang.Math;
 import java.util.Random;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.concurrent.Callable; 
-import java.util.concurrent.FutureTask; 
+import java.util.concurrent.*; 
 
 import java.lang.InterruptedException;
 import java.util.concurrent.ExecutionException;
@@ -35,24 +34,21 @@ public class piSimulation {
 
     
     public void simulateParalel(int nThreads) {
-        List<FutureTask> threads = new LinkedList<FutureTask>();
+
+        ExecutorService service = Executors.newFixedThreadPool(nThreads);
+        List<Future> threads = new LinkedList<Future>();
 
         try {
             int simulPerThread = simulations/nThreads;
 
             for(int i = 0; i < nThreads; i++) {
-
-                Callable callable = new threadSimulation(simulPerThread);
-
-                threads.add(new FutureTask(callable));
-
-                Thread t = new Thread(threads.get(i));
-                t.start();
+                Future<Integer> future = service.submit(new threadSimulation(simulPerThread));
+                threads.add(future);
             }
 
 
-            for(FutureTask task: threads) {
-                pointsCircle += (int)task.get();
+            for(Future task: threads) {
+                pointsCircle += (int) task.get();
             }
 
         } catch(ExecutionException e) {
@@ -60,6 +56,8 @@ public class piSimulation {
         } catch(InterruptedException e) {
             System.err.println("An Error occorred during threads execution.");
         }
+
+        service.shutdown();
     }
 
     public void simulate() {

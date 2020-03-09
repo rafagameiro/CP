@@ -2,7 +2,7 @@
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.Callable; 
 
-public class threadSimulation implements Callable {
+public class threadSimulation implements Callable<Integer> {
 
     private int simulations;
     private int points;
@@ -11,7 +11,7 @@ public class threadSimulation implements Callable {
         this.simulations = simulations;
     }
 
-    public Object call() {
+    public Integer call() {
 
         for(int i = 0; i < simulations; i++)
             doSimulation();
