@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <time.h>
 #include <math.h>
-
+#include <unistd.h>
 
 void computePI(double points, int simulations, double *pi)
 {
@@ -17,7 +17,7 @@ void * threadSimulation(void *simulations)
     double *points = malloc(sizeof(double));
     *points = 0.0;
 
-    int seed = time(NULL) + pthread_self();
+    int seed = getpid() ^ pthread_self();
 
     for(i = 0; i < ((long)simulations); i++)
     {
@@ -38,7 +38,8 @@ double * simulate(int simulations, int nThreads)
     long simulPerThread = simulations / nThreads;
     int i;
 
-    for(i = 0; i < nThreads; i++)
+    pthread_create(&threads[i], NULL, threadSimulation, (void *)(simulPerThread + simulPerThread % nThreads));
+    for(i = 1; i < nThreads; i++)
        pthread_create(&threads[i], NULL, threadSimulation, (void *)simulPerThread);
 
 
