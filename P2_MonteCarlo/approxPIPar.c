@@ -13,16 +13,19 @@ void computePI(double points, int simulations, double *pi)
 
 void * threadSimulation(void *simulations) 
 {
+    
     int i;
     double *points = malloc(sizeof(double));
     *points = 0.0;
 
-    int seed = getpid() ^ pthread_self();
+    unsigned int seed = getpid() ^ pthread_self();
 
-    for(i = 0; i < ((long)simulations); i++)
+    double x;
+    double y;
+    for(i = 0; i < (*(int *)simulations); i++)
     {
-        double x = (double) rand_r(&seed) / RAND_MAX;
-        double y = (double) rand_r(&seed) / RAND_MAX;
+        x = (double) rand_r(&seed) / RAND_MAX;
+        y = (double) rand_r(&seed) / RAND_MAX;
         
         if((x*x) + (y*y) <= 1.0)
             *points += 1.0; 
@@ -35,12 +38,15 @@ double * simulate(int simulations, int nThreads)
 {
     static double results[2];
     pthread_t threads[nThreads];
-    long simulPerThread = simulations / nThreads;
+    int nsimulations = simulations / nThreads;
+    int *simulPerThread = &nsimulations;
     int i;
 
-    pthread_create(&threads[i], NULL, threadSimulation, (void *)(simulPerThread + simulPerThread % nThreads));
-    for(i = 1; i < nThreads; i++)
+    for(i = 0; i < nThreads-1; i++)
        pthread_create(&threads[i], NULL, threadSimulation, (void *)simulPerThread);
+
+    *simulPerThread = *simulPerThread + *simulPerThread % nThreads;
+    pthread_create(&threads[nThreads-1], NULL, threadSimulation, (void *)simulPerThread);
 
 
     void *points;
@@ -48,7 +54,7 @@ double * simulate(int simulations, int nThreads)
     {
         pthread_join(threads[i], &points);
         results[0] += (*(double*) points);
-        free(points);
+        free((double *)points);
     }
 
     computePI(results[0], simulations, &results[1]);

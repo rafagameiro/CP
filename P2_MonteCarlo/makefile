@@ -1,23 +1,35 @@
+
+# target: source
+# 	commands
+
+#$^ -> refers to the source
+#$@ -> refers to the target
+
+
 CC=gcc
-CFLAGS=-I. #only used if you want to load header files (.h)
-FILE=approxPI.o
+CFLAGS=-lpthread#-I. only used if you want to load header files (.h)
 
-define check_file =
-    if test -f "$(FILE)"; then
-	rm approxPI.o    
-    fi
-endef
+help:
+	@printf "Commands:\n";
+	@printf "\tseq - compile sequential program.\n";
+	@printf "\tpar - compile parallel program.\n";
+
+seq: approxPI.o
+	    @$(CC) -o approxPI $^
+
+par: approxPIPar.o
+	    @$(CC) -o approxPIPar $^ $(CFLAGS)
 
 
-approxPImake: $(FILE)
-	    @$(CC) -o approxPI $(FILE)
-
-
-
-approxPI.o : approxPI.c
-	    @$(CC) -c approxPI.c
+%.o : %.c
+	    @$(CC) -c $^
 
 clean :  
 	@rm approxPI.o;
+	@rm approxPIPar.o;
 	@printf "Files removed.\n";
-	
+
+remove: 
+	@rm approxPI;
+	@rm approxPIPar;
+	@printf "Files removed.\n";
