@@ -1,53 +1,46 @@
 #include <stdio.h>
+#include <omp.h>
 #include <stdlib.h>
 #include <time.h>
-#include <math.h>
+#include <unistd.h>
 
-void doSimulation(double *points)
+int main(int argc, char* argv[])
 {
-    double x = (double) rand() / RAND_MAX;
-    double y = (double) rand() / RAND_MAX;
-    
-    double calc = (x*x) + (y*y);
-    
-    if(calc <= 1.0)
-       *points += 1.0; 
-}
-
-void computePI(double points, int simulations, double *pi)
-{
-    
-    *pi = (points / (double) simulations) * 4;
-}
-
-double * simulate(int simulations)
-{
-    static double results[2];
-    int i;
-
-    srand(time(NULL));
-    for(i = 0; i < simulations; i++)
-       doSimulation(&results[0]); 
-
-    computePI(results[0], simulations, &results[1]);
-
-    return results;
-}
-
-int main(int argc, char *argv[])
-{
-    
-    if(argc != 2)
+    if(argc != 3)
     {
-        printf("Error: please specify the number of simulations.\n");
+        printf("Please specify the number of iterations and threads.\n");
         return 1;
     }
 
-    double *results = simulate(strtol(argv[1], NULL, 10));
+    int simulations = strtol(argv[1], NULL, 10);
+    double pi;
+    int points = 0.0;    
+    
+    omp_set_num_threads(strtol(argv[2], NULL, 10));
 
-    printf("Total number of points: %s\n", argv[1]);
-    printf("Points within circle: \t%d\n", (int)results[0]);
-    printf("Pi estimation: \t\t%f\n", results[1]);
+    #pragma omp parallel
+    {
+        int i;
+        double x;
+        double y;
+
+        unsigned int seed = getpid();
+        #pragma omp parallel for reduction (+:points) 
+        for(i = 0; i < simulations; i++)
+        {
+            x = (double) rand_r(&seed) / RAND_MAX;
+            y = (double) rand_r(&seed) / RAND_MAX;
+        
+            if((x*x) + (y*y) <= 1.0)
+                points ++;
+        }
+    }
+
+    pi = ((double) points / (double) simulations) * 4;
+
+    printf("Total number of points: %d\n", simulations);
+    printf("Points within circle: \t%d\n", points);
+    printf("PI estimation: \t\t%f\n", pi);
 
     return 0;
 }
