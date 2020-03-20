@@ -10,8 +10,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    double simulations = (double) strtol(argv[1], NULL, 10);
-    double step = 1 / simulations;
+    int simulations = strtol(argv[1], NULL, 10);
+    double step = 1 / (double) simulations;
     double pi, sum = 0.0;    
     
     int i;
