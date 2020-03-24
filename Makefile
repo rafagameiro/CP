@@ -33,4 +33,4 @@ $(EXE): $(OBJ)
 # 	$(CC) $(CFLAGS) $<
 
 clean:
-	rm -f $(OUTPUT) $(OBJ)
+	rm -f $(EXE) $(OBJ)
