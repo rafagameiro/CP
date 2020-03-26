@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "config.h"
 #include "mem.h"
 
@@ -28,8 +29,9 @@ static const char *const usage_message =
     "Conway's Game of Life\n"
     "Raphael Kubo da Costa, RA 072201\n"
     "\n"
-    "Usage: glife [-p time] GENERATIONS INPUT_FILE\n"
+    "Usage: glife [-q] [-p time] GENERATIONS INPUT_FILE\n"
     "\n"
+    "  [-q] is a flag that only prints the last board if used\n"
     "  [-p time] amount of time the program sleep between generations\n"
     "  GENERATIONS is the number of generations the game should run\n"
     "  INPUT_FILE  is a file containing an initial board state\n" "\n";
@@ -71,6 +73,7 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
   GameConfig *config;
   long generations;
   long spause = 0;
+  size_t qflag = 1;
    
   if (argc < CLI_ARGC || argc > CLI_MAX_ARGC) {
     fprintf(stderr, usage_message);
@@ -78,16 +81,19 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
   }
 
   int opt;
-  while((opt = getopt(argc, argv, "p:")) != -1)
+  while((opt = getopt(argc, argv, "p:q")) != -1)
   {
     switch(opt)
     {
         case 'p':
-            if(optarg == argv[argc-2]) {
+            if(optarg == argv[argc-2] || strcmp(optarg, "-q") == 0) {
                 printf("\n[-p time] with time as the amount in milliseconds\n\n");
                 return NULL;
             }
             spause = strtol(optarg, NULL, 10);
+            break;
+        case 'q':
+            qflag = 0;
             break;
         case '?':
             printf("unknown option: %c\n", opt);
@@ -110,6 +116,7 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
 
   config = MEM_ALLOC(GameConfig);
   set_sleep_time(&config->time, spause);
+  config->quiet = qflag;
   config->generations = (size_t) generations;
   config->input_file = file;
 

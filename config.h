@@ -36,6 +36,7 @@
  */
 typedef struct {
   struct timespec time; /**< Time that the program will sleep between iterations. */
+  size_t quiet; /**< Flag to define if only the last iteration is printed.  */
   size_t generations; /**< Number of generations for which to run the game. */
   FILE *input_file;   /**< The file with the seed board. */
 } GameConfig;

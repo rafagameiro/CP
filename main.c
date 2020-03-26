@@ -40,20 +40,27 @@ int main(int argc, char *argv[])
 
     exit(1);
   }
+  
+  if(config->quiet == 1) {
+    printf("\033[%dJ\033[HSeed board:\n", 2);
+    game_print_board(game);
+  } 
 
-  printf("\033[%dJ\033[HSeed board:\n", 2);
-  game_print_board(game);
-
-  for (generation = 1; generation <= game_config_get_generations(config); generation++) {
+  for (generation = 1; generation <= game_config_get_generations(config)-1; generation++) {
     nanosleep(&config->time, NULL);
     if (game_tick(game)) {
       fprintf(stderr, "Error while advancing to the next generation.\n");
       game_config_free(config);
       game_free(game);
     }
-    printf("\033[HGeneration %zu:\n", generation);
-    game_print_board(game);
+    if(config->quiet == 1) {
+        printf("\033[HGeneration %zu:\n", generation);
+        game_print_board(game);
+    }
   }
+  if(config->quiet == 0) printf("\033[%dJ", 2);
+  printf("\033[HGeneration %zu:\n", generation);
+  game_print_board(game);
 
   game_config_free(config);
   game_free(game);
