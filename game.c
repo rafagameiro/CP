@@ -248,7 +248,7 @@ void game_print_board(Game *game)
 
   for (row = 0; row < game->rows; row++) {
     for (col = 0; col < game->cols; col++) {
-      printf("%c", game_is_alive(game, row, col) ? '#' : '.');
+      printf("\033[1;1H %c", game_is_alive(game, row, col) ? '#' : '.');
     }
     printf("\n");
   }
