@@ -54,10 +54,28 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
   FILE *file;
   GameConfig *config;
   long generations;
+  int setpause;
 
   if (argc != CLI_ARGC) {
     fprintf(stderr, usage_message);
     return NULL;
+  }
+
+  int opt;
+  while((opt = getopt(argc, argv, "p:")) != -1)
+  {
+    switch(opt)
+    {
+        case 'p':
+            printf("boas!!\n");
+            break;
+        case ':':
+            printf("Needs a argument\n");
+            break;
+        case '?':
+            printf("unknown option: %c\n", opt);
+            break;
+    } 
   }
 
   generations = strtol(argv[1], &endptr, 10);

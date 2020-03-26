@@ -22,6 +22,7 @@
 
 int main(int argc, char *argv[])
 {
+
   GameConfig *config;
   Game *game;
   size_t generation;
