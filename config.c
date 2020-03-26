@@ -28,8 +28,9 @@ static const char *const usage_message =
     "Conway's Game of Life\n"
     "Raphael Kubo da Costa, RA 072201\n"
     "\n"
-    "Usage: glife GENERATIONS INPUT_FILE\n"
+    "Usage: glife [-p time] GENERATIONS INPUT_FILE\n"
     "\n"
+    "  [-p time] amount of time the program sleep between generations\n"
     "  GENERATIONS is the number of generations the game should run\n"
     "  INPUT_FILE  is a file containing an initial board state\n" "\n";
 
@@ -39,6 +40,21 @@ void game_config_free(GameConfig *config)
     fclose(config->input_file);
     free(config);
   }
+}
+
+void set_sleep_time(struct timespec *time, long spause)
+{
+  long val = spause * 1000000;
+
+  if(val >= TIME_MAX_VAL) {
+    time->tv_sec = val / TIME_MAX_VAL;
+    time->tv_nsec = val % TIME_MAX_VAL;
+  }
+  else {
+    time->tv_sec = 0;
+    time->tv_nsec = val;
+  }
+    
 }
 
 size_t game_config_get_generations(GameConfig *config)
@@ -54,9 +70,9 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
   FILE *file;
   GameConfig *config;
   long generations;
-  int setpause;
-
-  if (argc != CLI_ARGC) {
+  long spause = 0;
+   
+  if (argc < CLI_ARGC || argc > CLI_MAX_ARGC) {
     fprintf(stderr, usage_message);
     return NULL;
   }
@@ -67,30 +83,33 @@ GameConfig *game_config_new_from_cli(int argc, char *argv[])
     switch(opt)
     {
         case 'p':
-            printf("boas!!\n");
-            break;
-        case ':':
-            printf("Needs a argument\n");
+            if(optarg == argv[argc-2]) {
+                printf("\n[-p time] with time as the amount in milliseconds\n\n");
+                return NULL;
+            }
+            spause = strtol(optarg, NULL, 10);
             break;
         case '?':
             printf("unknown option: %c\n", opt);
+            return NULL;
             break;
     } 
   }
-
-  generations = strtol(argv[1], &endptr, 10);
+  
+  generations = strtol(argv[argc-2], &endptr, 10);
   if ((*endptr != '\0') || (generations < 0)) {
     fprintf(stderr, "Error: GENERATIONS must be a valid positive integer\n");
     return NULL;
   }
 
-  file = fopen(argv[2], "r");
+  file = fopen(argv[argc-1], "r");
   if (!file) {
     fprintf(stderr, "Error: could not open '%s'\n", argv[2]);
     return NULL;
   }
 
   config = MEM_ALLOC(GameConfig);
+  set_sleep_time(&config->time, spause);
   config->generations = (size_t) generations;
   config->input_file = file;
 

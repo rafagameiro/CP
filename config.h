@@ -25,13 +25,17 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #define CLI_ARGC 3
+#define CLI_MAX_ARGC 6
+#define TIME_MAX_VAL 1000000000
 
 /**
  * Structure to hold the game options.
  */
 typedef struct {
+  struct timespec time; /**< Time that the program will sleep between iterations. */
   size_t generations; /**< Number of generations for which to run the game. */
   FILE *input_file;   /**< The file with the seed board. */
 } GameConfig;

@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
   game_print_board(game);
 
   for (generation = 1; generation <= game_config_get_generations(config); generation++) {
+    nanosleep(&config->time, NULL);
     if (game_tick(game)) {
       fprintf(stderr, "Error while advancing to the next generation.\n");
       game_config_free(config);
