@@ -245,10 +245,10 @@ void game_print_board(Game *game)
 
   assert(game);
   assert(game->board);
-
+    
   for (row = 0; row < game->rows; row++) {
     for (col = 0; col < game->cols; col++) {
-      printf("\033[1;1H %c", game_is_alive(game, row, col) ? '#' : '.');
+      printf("%c", game_is_alive(game, row, col) ? '#' : '.');
     }
     printf("\n");
   }
