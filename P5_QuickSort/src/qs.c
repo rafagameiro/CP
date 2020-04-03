@@ -8,7 +8,7 @@
 #include "qs.h" 
 
 
-#define TYPE_SET    3   // to work with doubles
+#define TYPE_SET    2   // to work with doubles
 // #define TYPE_SET    2   // to work with longs
 // #define TYPE_SET    3, 4, ..., to whatever types you find interesting
 
@@ -174,7 +174,7 @@ int main (int argc, char* argv[]) {
     for (int i = 0; i < N; i++)
         array[i] = TYPE_RAND;
 
-    TYPE_DEBUG(array, N); // comment for larger arrays
+    //TYPE_DEBUG(array, N); // comment for larger arrays
     
     // sort the array using quick sort
     double start = wctime ();
@@ -184,7 +184,7 @@ int main (int argc, char* argv[]) {
     // print execution time
     printf ("\nqs-%s\nArray size = %'ld\nWall clock elapsed time = %6.3lf seconds\n\n", VERSION, N, end-start);
 
-    TYPE_DEBUG(array, N); // comment for larger arrays
+    //TYPE_DEBUG(array, N); // comment for larger arrays
     
     // validate that the array is sorted correctly
     TYPE_validate (array, N, TYPE_less_than);
