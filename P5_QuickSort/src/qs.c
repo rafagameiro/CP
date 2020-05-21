@@ -8,10 +8,10 @@
 #include "qs.h" 
 
 
-#define TYPE_SET    1   // to work with doubles
+#define TYPE_SET    3     // to work with doubles
 // #define TYPE_SET    2   // to work with longs
-// #define TYPE_SET    3, 4, ..., to whatever types you find interesting
-
+// #define TYPE_SET    3  // to work with strings
+// #define TYPE_SET    4, ..., to whatever types you find interesting
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +48,11 @@ void TYPE_validate(const void* array, long N, int (*compar)(const void *, const 
             // TYPE_DEBUG(a, N);
             exit(1);
         }
+}
+
+void TYPE_free(const void* array, long N) {
+    void *a = (void *) array;
+    free(a);
 }
 #endif
 /// End of stuff for TYPE = double
@@ -86,6 +91,11 @@ void TYPE_validate(const void* array, long N, int (*compar)(const void *, const 
             // TYPE_DEBUG(a, N);
             exit(1);
         }
+}
+
+void TYPE_free(const void* array, long N) {
+    void *a = (void *) array;
+    free(a);
 }
 #endif
 /// End of stuff for TYPE = long
@@ -129,6 +139,13 @@ void TYPE_validate(const void* array, long N, int (*compar)(const void *, const 
             // TYPE_DEBUG(a, N);
             exit(1);
         }
+}
+
+void TYPE_free(const void* array, long N) {
+    TYPE *a = (TYPE *)array;
+    for(int i = 0; i < N; i++)
+        free(a[i]);
+    free(a);
 }
 #endif
 /// End of stuff for TYPE = string[STRSIZE]
@@ -188,8 +205,8 @@ int main (int argc, char* argv[]) {
     
     // validate that the array is sorted correctly
     TYPE_validate (array, N, TYPE_less_than);
-    
-    free (array);
+   
+    TYPE_free (array, N); 
 
     return 0;
 }

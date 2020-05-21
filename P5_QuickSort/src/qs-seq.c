@@ -1,6 +1,5 @@
 #include "qs.h"
 
-#include<stdio.h>
 
 int partition(void *base, size_t pos, size_t nel, size_t width, int (*compar)(const void *, const void *))
 {
@@ -9,7 +8,7 @@ int partition(void *base, size_t pos, size_t nel, size_t width, int (*compar)(co
 
     for(int j = pos; j < nel-1; j++)
     {
-        if(compar(base + j * width, x) == -1 || compar(base + j * width, x) == 0)
+        if(compar(base + j * width, x) < 1)
         {
             i++;
             swap(base + i * width, base + j * width, width);
